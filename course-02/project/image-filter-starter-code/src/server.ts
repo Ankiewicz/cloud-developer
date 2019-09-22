@@ -1,6 +1,9 @@
-import express from 'express';
+import express, { response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
+
+//@ts-ignore
+import detect from 'detect-file-type';
 
 (async () => {
 
@@ -13,6 +16,31 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
+  app.get("/filteredimage", async ( req, res, next ) => {
+    const acceptedImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
+    let { image_url } = req.query;
+    let imgResponse = await filterImageFromURL(image_url);
+
+    
+    detect.fromFile(imgResponse, (err: any, result: any) => {
+      if (err) console.error(err);
+
+      if (acceptedImageTypes.includes(result.mime)) {
+        res.sendFile(imgResponse, () => {
+          deleteLocalFiles([imgResponse])
+            .then(() => {
+              next();
+            })
+            .catch((err)=> {
+              console.error(err);
+            });
+        });
+      } else {
+        res.send('NOT AN IMAGE');
+        deleteLocalFiles([imgResponse]);
+      }
+    });
+  });
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
