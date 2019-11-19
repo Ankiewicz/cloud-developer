@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  AWS_BUCKET: udagramankiedev
+  AWS_MEDIA_BUCKET: AWS_BUCKET
+  AWS_PROFILE: udagramankiedev
+  AWS_REGION: us-east-1
+  JWT_SECRET: "jwt test"
+  POSTGRESS_DATABASE: udagram
+  POSTGRESS_DB: udagram
+  POSTGRESS_HOST: udagram.cyhpkm2vrzal.us-east-1.rds.amazonaws.com
+  URL: http://localhost:8100  
+metadata:
+  name: env-config
